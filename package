@@ -1,0 +1,123 @@
+build deploy
+name: Maven steps to CodeArtifact and ECR
+on:
+    push:
+      branches:
+        - dev1
+      # paths:
+      #   - /home/runner/work/aoi-iac-copy-bims/aoi-iac-copy-bims/aws/aoi/stacks/ec2
+  
+    # pull_request:
+jobs:
+#  comment:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - run: gh issue comment $ISSUE --body "Thank you for opening this issue!"
+#        env:
+#          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          ISSUE: ${{ github.event.issue.html_url }}
+  code-artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build and test
+        run: |
+          ./mvnw -s settings.xml clean install
+      - name: Put Code coverage tool here
+        run: |
+          echo "ADD CODE COVERAGE TOOL HERE"
+      - uses: aws-actions/setup-sam@v1
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          #role-to-assume: ${{ secrets.MAVEN_IAM_ROLE }}
+          #role-session-name: GitHub-Action-Role
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Build and deploy to maven artifact repository
+        run: |
+          export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token --region us-east-1 --domain alphaomega-repo --domain-owner 127418365645 --query authorizationToken --output text)
+          ./mvnw -s settings.xml clean deploy -P alphaomega-repo-alpha-omega-repo
+      - name: Push Docker Image to ECR
+        run: |
+          ./mvnw -s settings.xml k8s:build
+          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 127418365645.dkr.ecr.us-east-1.amazonaws.com
+          docker push 127418365645.dkr.ecr.us-east-1.amazonaws.com/user-context-service:latest
+
+          ---
+
+
+ame: "Terraform Action"
+on:
+  push:
+    branches:
+      - main
+    # paths:
+    #   - /home/runner/work/aoi-iac-copy-bims/aoi-iac-copy-bims/aws/aoi/stacks/ec2
+
+  # pull_request:
+permissions:
+      id-token: write # This is required for aws oidc connection role
+      contents: read # This is required for actions/checkout in r53
+      pull-requests: write # This is required for gh bot to comment PR
+env:
+  TF_LOG: INFO
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: .
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+      
+      - name: Configure aWS credentials from AWS account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-session-name: GitHub-OIDC-TERRAFORM
+
+ 
+      code-artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build and test
+        run: |
+          ./mvnw -s settings.xml clean install
+      - name: Put Code coverage tool here
+        run: |
+          echo "ADD CODE COVERAGE TOOL HERE"
+      - uses: aws-actions/setup-sam@v1
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          #role-to-assume: ${{ secrets.MAVEN_IAM_ROLE }}
+          #role-session-name: GitHub-Action-Role
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Build and deploy to maven artifact repository
+        run: |
+          export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token --region us-east-1 --domain alphaomega-repo --domain-owner 127418365645 --query authorizationToken --output text)
+          ./mvnw -s settings.xml clean deploy -P alphaomega-repo-alpha-omega-repo
+      - name: Push Docker Image to ECR
+        run: |
+          ./mvnw -s settings.xml k8s:build
+          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 127418365645.dkr.ecr.us-east-1.amazonaws.com
+          docker push 127418365645.dkr.ecr.us-east-1.amazonaws.com/user-context-service:latest          
