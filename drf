@@ -1,0 +1,16 @@
+
+Afternoon everyone! I've reviewed your code above, and wanted to add some additional work. You can ignore that catalog-info.yaml addition as the last step. In review with the CDC earlier, we determined that would not be prioritized immediately
+This week, you need to have a minikube cluster up by end of week. https://minikube.sigs.k8s.io/docs/start/ 
+minikube start
+minikube is local Kubernetes
+You'll need kubectl as well https://kubernetes.io/docs/tasks/tools/install-kubectl-macos/
+Install and Set Up kubectl on macOS
+Before you begin You must use a kubectl version that is within one minor version difference of your cluster. For example, a v1.29 client can communicate with v1.28, v1.29, and v1.30 control planes....
+You do not need Docker desktop - https://podman.io/docs/installation can be used for the container engine. You'll need to specify podman as part of your minikube config
+Podman Installation | Podman
+Looking for a GUI? You can find Podman Desktop here.
+Once you've got everything installed, you'll need to confirm everything is operational with https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/
+Run a Stateless Application Using a Deployment
+This page shows how to run an application using a Kubernetes Deployment object.
+Objectives Create an nginx deployment. Use kubectl to list information about the deployment. Update the deployment. B...
+If you are running on WSL - the networking stack will break if you're on VPN. It's a known issue. You'll need to be off VPN for your cluster to work
