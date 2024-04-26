@@ -1,1 +1,22 @@
+Kind create cluster --config kind-config.yaml
+
+NAMESPACE="arc-systems"
+helm install arc \
+    --namespace "${NAMESPACE}" \
+    --create-namespace \
+    oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
+
+INSTALLATION_NAME="arc-runner-set"
+NAMESPACE="arc-runners"
+helm install "${INSTALLATION_NAME}" \
+    --namespace "${NAMESPACE}" \
+    --create-namespace \
+    --set githubConfigUrl="https://github.com/enochnet/covid_case_privacy_review" \
+    --set githubConfigSecret.github_token="${GITHUB_PAT}" \
+    oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
+
+
+kubectl create secret generic pre-defined-secret \
+   --namespace=arc-runners \
+   --from-literal=github_token=‘
 
