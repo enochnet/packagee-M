@@ -1,13 +1,6 @@
-
+/Users/enochoforiantwi/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
 Traceback (most recent call last):
-  File "/usr/local/bin/flask", line 5, in <module>
-    from flask.cli import main
-  File "/usr/local/lib/python3.8/site-packages/flask/__init__.py", line 7, in <module>
-    from .app import Flask as Flask
-  File "/usr/local/lib/python3.8/site-packages/flask/app.py", line 28, in <module>
-    from . import cli
-  File "/usr/local/lib/python3.8/site-packages/flask/cli.py", line 18, in <module>
-    from .helpers import get_debug_flag
-  File "/usr/local/lib/python3.8/site-packages/flask/helpers.py", line 16, in <module>
-    from werkzeug.urls import url_quote
-ImportError: cannot import name 'url_quote' from 'werkzeug.urls' (/usr/local/lib/python3.8/site-packages/werkzeug/urls.py)
+  File "/Users/enochoforiantwi/projects/weather-app/microservice/app/app.py", line 2, in <module>
+    from geopy.geocoders import Nominatim
+ModuleNotFoundError: No module named 'geopy'
