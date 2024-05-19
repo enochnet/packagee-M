@@ -6,3 +6,53 @@ Creating cluster "cdc-cluster-installer" ...
 Deleted nodes: ["cdc-cluster-installer-worker2" "cdc-cluster-installer-worker" "cdc-cluster-installer-control-plane"]
 ERROR: failed to create cluster: command "podman run --name cdc-cluster-installer-worker --hostname cdc-cluster-installer-worker --label io.x-k8s.kind.role=worker --privileged --tmpfs /tmp --tmpfs /run --volume d1b028b68c2e426685b625bcd343a3da9c69006cca1844a6c8d1653ea5e5bec4:/var:suid,exec,dev --volume /lib/modules:/lib/modules:ro -e KIND_EXPERIMENTAL_CONTAINERD_SNAPSHOTTER --detach --tty --net kind --label io.x-k8s.kind.cluster=cdc-cluster-installer -e container=podman --cgroupns=private --volume /dev/mapper:/dev/mapper --device /dev/fuse --publish=127.0.0.1:80:30000/tcp --publish=127.0.0.1:443:31000/tcp --publish=127.0.0.1:15021:32000/tcp docker.io/kindest/node@sha256:51a1434a5397193442f0be2a297b488b6c919ce8a3931be0ce822606ea5ca245" failed with error: exit status 126
 Command Output: Error: something went wrong with the request: "listen tcp 127.0.0.1:80: bind: permission denied\n"
+
+
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: cdc-cluster-installer
+nodes:
+- role: control-plane
+  kubeadmConfigPatches:
+  - |
+    kind: InitConfiguration
+    nodeRegistration:
+      kubeletExtraArgs:
+        node-labels: "ingress-ready=true"
+  extraPortMappings:
+  - containerPort: 80
+    hostPort: 30071
+    protocol: TCP
+  - containerPort: 443
+    hostPort: 30072
+    protocol: TCP
+- role: worker
+  extraPortMappings:
+  - containerPort: 30000
+    hostPort: 80
+    listenAddress: "127.0.0.1"
+    protocol: TCP
+  - containerPort: 31000
+    hostPort: 443
+    listenAddress: "127.0.0.1"
+    protocol: TCP
+  - containerPort: 32000
+    hostPort: 15021
+    listenAddress: "127.0.0.1"
+    protocol: TCP
+
+- role: worker
+  extraPortMappings:
+  - containerPort: 30001
+    hostPort: 80
+    listenAddress: "127.0.0.1"
+    protocol: TCP
+  - containerPort: 31001
+    hostPort: 443
+    listenAddress: "127.0.0.1"
+    protocol: TCP
+  - containerPort: 32001
+    hostPort: 15021
+    listenAddress: "127.0.0.1"
+    protocol: TCP
+#- role: worker
