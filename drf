@@ -1,4 +1,37 @@
-Traceback (most recent call last):
-  File "/app/weather_microservice/app.py", line 2, in <module>
-    from geopy.geocoders import Nominatim
-ModuleNotFoundError: No module named 'geopy'
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: cdc-cluster-installer
+nodes:
+- role: control-plane
+  kubeadmConfigPatches:
+  - |
+    kind: InitConfiguration
+    nodeRegistration:
+      kubeletExtraArgs:
+        node-labels: "ingress-ready=true"
+  extraPortMappings:
+  - containerPort: 80
+    hostPort: 30071
+    protocol: TCP
+  - containerPort: 443
+    hostPort: 30072
+    protocol: TCP
+- role: worker
+  extraPortMappings:
+  - containerPort: 80
+    hostPort: 80
+  - containerPort: 443
+    hostPort: 443
+  - containerPort: 2222
+    hostPort: 2222
+
+
+- role: worker
+  extraPortMappings:
+  - containerPort: 80
+    hostPort: 80
+  - containerPort: 443
+    hostPort: 443
+  - containerPort: 2222
+    hostPort: 2222
+#- role: worker
