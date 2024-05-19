@@ -1,45 +1,4 @@
-elm 3.14.3 is already installed but outdated (so it will be upgraded).
-==> Downloading https://ghcr.io/v2/homebrew/core/helm/manifests/3.15.0
-################################################################################### 100.0%
-==> Fetching helm
-==> Downloading https://ghcr.io/v2/homebrew/core/helm/blobs/sha256:d5304df58b1000425c61915
-################################################################################### 100.0%
-==> Upgrading helm
-  3.14.3 -> 3.15.0 
-==> Pouring helm--3.15.0.arm64_sonoma.bottle.tar.gz
-==> Caveats
-zsh completions have been installed to:
-  /opt/homebrew/share/zsh/site-functions
-==> Summary
-🍺  /opt/homebrew/Cellar/helm/3.15.0: 66 files, 50.3MB
-==> Running `brew cleanup helm`...
-Disable this behaviour by setting HOMEBREW_NO_INSTALL_CLEANUP.
-Hide these hints with HOMEBREW_NO_ENV_HINTS (see `man brew`).
-Removing: /opt/homebrew/Cellar/helm/3.14.3... (65 files, 48.9MB)
-Removing: /Users/enochoforiantwi/Library/Caches/Homebrew/helm_bottle_manifest--3.14.3... (7.3KB)
-
-*******************************************************************************************************************
-Adding istio helm repo
-*******************************************************************************************************************
-WARNING: Kubernetes configuration file is group-readable. This is insecure. Location: /Users/enochoforiantwi/.kube/config
-WARNING: Kubernetes configuration file is world-readable. This is insecure. Location: /Users/enochoforiantwi/.kube/config
-"istio" already exists with the same configuration, skipping
-
-*******************************************************************************************************************
-Installing istio base CRDs
-*******************************************************************************************************************
-WARNING: Kubernetes configuration file is group-readable. This is insecure. Location: /Users/enochoforiantwi/.kube/config
-WARNING: Kubernetes configuration file is world-readable. This is insecure. Location: /Users/enochoforiantwi/.kube/config
-Error: INSTALLATION FAILED: Kubernetes cluster unreachable: Get "http://localhost:8080/version": dial tcp 127.0.0.1:8080: connect: connection refused
-enochoforiantwi@T9W2N62MWR servicemesh % kubectl get ns
-E0519 14:03:39.924297   26856 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp 127.0.0.1:8080: connect: connection refused
-E0519 14:03:39.926190   26856 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp 127.0.0.1:8080: connect: connection refused
-E0519 14:03:39.926742   26856 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp 127.0.0.1:8080: connect: connection refused
-E0519 14:03:39.927966   26856 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp 127.0.0.1:8080: connect: connection refused
-E0519 14:03:39.928427   26856 memcache.go:265] couldn't get current server API group list: Get "http://localhost:8080/api?timeout=32s": dial tcp 127.0.0.1:8080: connect: connection refused
-The connection to the server localhost:8080 was refused - did you specify the right host or port?
-enochoforiantwi@T9W2N62MWR servicemesh % kind delete cluster --name cdc-cluster-installer
-using podman due to KIND_EXPERIMENTAL_PROVIDER
-enabling experimental podman provider
-Deleting cluster "cdc-cluster-installer" ...
-enochoforiantwi@T9W2N62MWR servicemesh % 
+Deleted nodes: ["dev-control-plane" "dev-worker"]
+ERROR: failed to create cluster: command "podman run --name dev-worker --hostname dev-worker --label io.x-k8s.kind.role=worker --privileged --tmpfs /tmp --tmpfs /run --volume 64363cf450faa2bbd4d61c7c991742ae2e94c51f2a694adcc2100b14b04c3068:/var:suid,exec,dev --volume /lib/modules:/lib/modules:ro -e KIND_EXPERIMENTAL_CONTAINERD_SNAPSHOTTER --detach --tty --net kind --label io.x-k8s.kind.cluster=dev -e container=podman --cgroupns=private --volume /dev/mapper:/dev/mapper --device /dev/fuse --publish=0.0.0.0:80:30000/tcp --publish=0.0.0.0:443:31000/tcp --publish=0.0.0.0:15021:32000/tcp docker.io/kindest/node@sha256:047357ac0cfea04663786a612ba1eaba9702bef25227a794b52890dd8bcd692e" failed with error: exit status 126
+Command Output: Error: rootlessport cannot expose privileged port 80, you can add 'net.ipv4.ip_unprivileged_port_start=80' to /etc/sysctl.conf (currently 1024), or choose a larger port number (>= 1024): listen tcp 0.0.0.0:80: bind: permission denied
+enochoforiantwi@T9W2N62MWR gateway % 
