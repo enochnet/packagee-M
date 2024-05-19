@@ -35,3 +35,24 @@ nodes:
   - containerPort: 2222
     hostPort: 2222
 #- role: worker
+
+
+sing podman due to KIND_EXPERIMENTAL_PROVIDER
+enabling experimental podman provider
+Creating cluster "cdc-cluster-installer" ...
+ ✓ Ensuring node image (kindest/node:v1.29.2) 🖼 
+ ✗ Preparing nodes 📦 📦 📦  
+Deleted nodes: ["cdc-cluster-installer-control-plane" "cdc-cluster-installer-worker" "cdc-cluster-installer-worker2"]
+ERROR: failed to create cluster: command "podman run --name cdc-cluster-installer-worker2 --hostname cdc-cluster-installer-worker2 --label io.x-k8s.kind.role=worker --privileged --tmpfs /tmp --tmpfs /run --volume e7d5a43dfa47b8ea9790759549d3e05e27532e9a40fcfa2052320edea229a185:/var:suid,exec,dev --volume /lib/modules:/lib/modules:ro -e KIND_EXPERIMENTAL_CONTAINERD_SNAPSHOTTER --detach --tty --net kind --label io.x-k8s.kind.cluster=cdc-cluster-installer -e container=podman --cgroupns=private --volume /dev/mapper:/dev/mapper --device /dev/fuse --publish=0.0.0.0:80:80/tcp --publish=0.0.0.0:443:443/tcp --publish=0.0.0.0:2222:2222/tcp docker.io/kindest/node@sha256:51a1434a5397193442f0be2a297b488b6c919ce8a3931be0ce822606ea5ca245" failed with error: exit status 126
+Command Output: Error: something went wrong with the request: "listen tcp :80: bind: address already in use\n"
+WARNING: Kubernetes configuration file is group-readable. This is insecure. Location: /Users/enochoforiantwi/.kube/config
+WARNING: Kubernetes configuration file is world-readable. This is insecure. Location: /Users/enochoforiantwi/.kube/config
+Pulled: ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller:0.9.1
+Digest: sha256:ade88f5d3f2d52dc56f2aa2e412c1dca5305f8b337e14dacdae72a8fc9af6cc7
+Error: INSTALLATION FAILED: Kubernetes cluster unreachable: Get "http://localhost:8080/version": dial tcp 127.0.0.1:8080: connect: connection refused
+WARNING: Kubernetes configuration file is group-readable. This is insecure. Location: /Users/enochoforiantwi/.kube/config
+WARNING: Kubernetes configuration file is world-readable. This is insecure. Location: /Users/enochoforiantwi/.kube/config
+Pulled: ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set:0.9.1
+Digest: sha256:c0286fe4671c35344477beb8e3519e50bb47cef0e55fd021ae013a01de86cc6c
+Error: INSTALLATION FAILED: Kubernetes cluster unreachable: Get "http://localhost:8080/version": dial tcp 127.0.0.1:8080: connect: connection refused
+error: failed to create secret Post "http://localhost:8080/api/v1/namespaces/arc-runners/secrets?fieldManager=kubectl-create&fieldValidation=Strict": dial tcp 127.0.0.1:8080: connect: connection refused
