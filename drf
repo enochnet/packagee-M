@@ -1,102 +1,83 @@
- kubectl describe pod  istiod-56855645c8-qhtnn -n istio-system
-Name:             istiod-56855645c8-qhtnn
-Namespace:        istio-system
-Priority:         0
-Service Account:  istiod
-Node:             <none>
-Labels:           app=istiod
-                  install.operator.istio.io/owning-resource=unknown
-                  istio=pilot
-                  istio.io/dataplane-mode=none
-                  istio.io/rev=default
-                  operator.istio.io/component=Pilot
-                  pod-template-hash=56855645c8
-                  sidecar.istio.io/inject=false
-Annotations:      prometheus.io/port: 15014
-                  prometheus.io/scrape: true
-                  sidecar.istio.io/inject: false
-Status:           Pending
-IP:               
-IPs:              <none>
-Controlled By:    ReplicaSet/istiod-56855645c8
-Containers:
-  discovery:
-    Image:       docker.io/istio/pilot:1.22.0
-    Ports:       8080/TCP, 15010/TCP, 15017/TCP
-    Host Ports:  0/TCP, 0/TCP, 0/TCP
-    Args:
-      discovery
-      --monitoringAddr=:15014
-      --log_output_level=default:info
-      --domain
-      cluster.local
-      --keepaliveMaxServerConnectionAge
-      30m
-    Requests:
-      cpu:      500m
-      memory:   2Gi
-    Readiness:  http-get http://:8080/ready delay=1s timeout=5s period=3s #success=1 #failure=3
-    Environment:
-      REVISION:               default
-      PILOT_CERT_PROVIDER:    istiod
-      POD_NAME:               istiod-56855645c8-qhtnn (v1:metadata.name)
-      POD_NAMESPACE:          istio-system (v1:metadata.namespace)
-      SERVICE_ACCOUNT:         (v1:spec.serviceAccountName)
-      KUBECONFIG:             /var/run/secrets/remote/config
-      PILOT_TRACE_SAMPLING:   1
-      PILOT_ENABLE_ANALYSIS:  false
-      CLUSTER_ID:             Kubernetes
-      GOMEMLIMIT:             node allocatable (limits.memory)
-      GOMAXPROCS:             node allocatable (limits.cpu)
-      PLATFORM:               
-    Mounts:
-      /etc/cacerts from cacerts (ro)
-      /var/run/secrets/istio-dns from local-certs (rw)
-      /var/run/secrets/istiod/ca from istio-csr-ca-configmap (ro)
-      /var/run/secrets/istiod/tls from istio-csr-dns-cert (ro)
-      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-2ft49 (ro)
-      /var/run/secrets/remote from istio-kubeconfig (ro)
-      /var/run/secrets/tokens from istio-token (ro)
-Conditions:
-  Type           Status
-  PodScheduled   False 
-Volumes:
-  local-certs:
-    Type:       EmptyDir (a temporary directory that shares a pod's lifetime)
-    Medium:     Memory
-    SizeLimit:  <unset>
-  istio-token:
-    Type:                    Projected (a volume that contains injected data from multiple sources)
-    TokenExpirationSeconds:  43200
-  cacerts:
-    Type:        Secret (a volume populated by a Secret)
-    SecretName:  cacerts
-    Optional:    true
-  istio-kubeconfig:
-    Type:        Secret (a volume populated by a Secret)
-    SecretName:  istio-kubeconfig
-    Optional:    true
-  istio-csr-dns-cert:
-    Type:        Secret (a volume populated by a Secret)
-    SecretName:  istiod-tls
-    Optional:    true
-  istio-csr-ca-configmap:
-    Type:      ConfigMap (a volume populated by a ConfigMap)
-    Name:      istio-ca-root-cert
-    Optional:  true
-  kube-api-access-2ft49:
-    Type:                    Projected (a volume that contains injected data from multiple sources)
-    TokenExpirationSeconds:  3607
-    ConfigMapName:           kube-root-ca.crt
-    ConfigMapOptional:       <nil>
-    DownwardAPI:             true
-QoS Class:                   Burstable
-Node-Selectors:              <none>
-Tolerations:                 cni.istio.io/not-ready op=Exists
-                             node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
-                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
-Events:
-  Type     Reason            Age                    From               Message
-  ----     ------            ----                   ----               -------
-  Warning  FailedScheduling  4m27s (x2 over 9m39s)  default-scheduler  0/3 nodes are available: 1 node(s) had untolerated taint {node-role.kubernetes.io/control-plane: }, 2 Insufficient memory. preemption: 0/3 nodes are available: 1 Preemption is not helpful for scheduling, 2 No preemption victims found for incoming pod.
-enochoforiantwi@T9W2N62MWR projects % 
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: cdc-cluster-installer
+nodes:
+- role: control-plane
+  kubeadmConfigPatches:
+  - |
+    kind: InitConfiguration
+    nodeRegistration:
+      kubeletExtraArgs:
+        node-labels: "ingress-ready=true"
+  extraPortMappings:
+  - containerPort: 80
+    hostPort: 30071
+    protocol: TCP
+  - containerPort: 443
+    hostPort: 30072
+    protocol: TCP
+
+- role: worker
+  extraPortMappings:
+  - containerPort: 80
+    hostPort: 30080
+    listenAddress: "0.0.0.0"
+    protocol: TCP
+  - containerPort: 443
+    hostPort: 30443
+    listenAddress: "0.0.0.0"
+    protocol: TCP
+  - containerPort: 15021
+    hostPort: 15021
+    listenAddress: "0.0.0.0"
+    protocol: TCP
+  - containerPort: 3100
+    hostPort: 3100
+    listenAddress: "0.0.0.0"
+    protocol: TCP
+  extraMounts:
+  - containerPath: /var/lib/containerd
+    hostPath: /var/lib/containerd
+  extraConfig: |
+    kind: ClusterConfiguration
+    apiServer:
+      extraArgs:
+        "enable-admission-plugins": "NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota"
+    kubeletExtraConfig:
+      systemReserved:
+        memory: "1Gi"
+        cpu: "500m"  
+- role: worker
+  extraPortMappings:
+  - containerPort: 80
+    hostPort: 30081
+    listenAddress: "0.0.0.0"
+    protocol: TCP
+  - containerPort: 443
+    hostPort: 30444
+    listenAddress: "0.0.0.0"
+    protocol: TCP
+  - containerPort: 15021
+    hostPort: 15022
+    listenAddress: "0.0.0.0"
+    protocol: TCP
+  - containerPort: 15090
+    hostPort: 15091
+    listenAddress: "0.0.0.0"
+    protocol: TCP
+  - containerPort: 3100
+    hostPort: 3101
+    listenAddress: "0.0.0.0"
+    protocol: TCP
+   extraMounts:
+  - containerPath: /var/lib/containerd
+    hostPath: /var/lib/containerd
+  extraConfig: |
+    kind: ClusterConfiguration
+    apiServer:
+      extraArgs:
+        "enable-admission-plugins": "NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota"
+    kubeletExtraConfig:
+      systemReserved:
+        memory: "1Gi"
+        cpu: "500m" 
